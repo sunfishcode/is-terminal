@@ -1,6 +1,6 @@
 [package]
 name = "is-terminal"
-version = "0.0.0"
+version = "0.0.1-alpha.0"
 authors = [
     "softprops <d.tangren@gmail.com>",
     "Dan Gohman <dev@sunfishcode.online>"
