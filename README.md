@@ -98,3 +98,4 @@ version of this crate.
 [`isatty`]: https://man7.org/linux/man-pages/man3/isatty.3.html
 [the atty crate]: https://crates.io/crates/atty
 [I/O safety]: https://github.com/rust-lang/rfcs/blob/master/text/3128-io-safety.md
+[Rust on Debian stable]: https://packages.debian.org/stable/rust/rustc
