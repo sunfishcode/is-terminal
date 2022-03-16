@@ -15,10 +15,10 @@ exclude = ["/.github"]
 edition = "2018"
 
 [dependencies]
-io-lifetimes = "0.5.1"
+io-lifetimes = "0.6.0"
 
 [target.'cfg(not(any(windows, target_os = "hermit")))'.dependencies]
-rustix = "0.33.0"
+rustix = "0.34.0"
 
 [target.'cfg(target_os = "hermit")'.dependencies]
 hermit-abi = "0.2.0"
