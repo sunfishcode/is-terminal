@@ -20,12 +20,10 @@
 #[cfg(unix)]
 extern crate libc;
 #[cfg(windows)]
-extern crate winapi;
+extern crate windows_sys;
 
 #[cfg(windows)]
-use winapi::shared::minwindef::DWORD;
-#[cfg(windows)]
-use winapi::shared::ntdef::WCHAR;
+use windows_sys::Win32::System::Console::STD_HANDLE;
 
 /// possible stream sources
 #[derive(Clone, Copy, Debug)]
@@ -64,7 +62,7 @@ pub fn is(stream: Stream) -> bool {
 /// returns true if this is a tty
 #[cfg(windows)]
 pub fn is(stream: Stream) -> bool {
-    use winapi::um::winbase::{
+    use windows_sys::Win32::System::Console::{
         STD_ERROR_HANDLE as STD_ERROR, STD_INPUT_HANDLE as STD_INPUT,
         STD_OUTPUT_HANDLE as STD_OUTPUT,
     };
@@ -90,7 +88,7 @@ pub fn is(stream: Stream) -> bool {
 
     // Otherwise, we fall back to a very strange msys hack to see if we can
     // sneakily detect the presence of a tty.
-    msys_tty_on(fd)
+    unsafe { msys_tty_on(fd) }
 }
 
 /// returns true if this is _not_ a tty
@@ -100,8 +98,8 @@ pub fn isnt(stream: Stream) -> bool {
 
 /// Returns true if any of the given fds are on a console.
 #[cfg(windows)]
-unsafe fn console_on_any(fds: &[DWORD]) -> bool {
-    use winapi::um::{consoleapi::GetConsoleMode, processenv::GetStdHandle};
+unsafe fn console_on_any(fds: &[STD_HANDLE]) -> bool {
+    use windows_sys::Win32::System::Console::{GetConsoleMode, GetStdHandle};
 
     for &fd in fds {
         let mut out = 0;
@@ -115,26 +113,25 @@ unsafe fn console_on_any(fds: &[DWORD]) -> bool {
 
 /// Returns true if there is an MSYS tty on the given handle.
 #[cfg(windows)]
-fn msys_tty_on(fd: DWORD) -> bool {
-    use winapi::{
-        ctypes::c_void,
-        shared::minwindef::MAX_PATH,
-        um::{
-            minwinbase::FileNameInfo, processenv::GetStdHandle,
-            winbase::GetFileInformationByHandleEx,
-        },
+unsafe fn msys_tty_on(fd: STD_HANDLE) -> bool {
+    use std::ffi::c_void;
+    use windows_sys::Win32::{
+        Foundation::MAX_PATH,
+        Storage::FileSystem::{FileNameInfo, GetFileInformationByHandleEx},
+        System::Console::GetStdHandle,
     };
 
-    /// Mirrors winapi::um::fileapi::FILE_NAME_INFO, giving it a fixed length that
-    /// we can stack allocate
+    /// Mirrors windows_sys::Win32::Storage::FileSystem::FILE_NAME_INFO, giving
+    /// it a fixed length that we can stack allocate
     #[repr(C)]
+    #[allow(non_snake_case)]
     struct FILE_NAME_INFO {
-        FileNameLength: DWORD,
-        FileName: [WCHAR; MAX_PATH]
+        FileNameLength: u32,
+        FileName: [u16; MAX_PATH as usize],
     }
     let mut name_info = FILE_NAME_INFO {
         FileNameLength: 0,
-        FileName: [0; MAX_PATH]
+        FileName: [0; MAX_PATH as usize],
     };
     let handle = unsafe {
         // Safety: function has no invariants. an invalid handle id will cause
