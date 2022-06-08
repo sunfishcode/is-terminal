@@ -15,17 +15,20 @@ exclude = ["/.github"]
 edition = "2018"
 
 [dependencies]
-io-lifetimes = "0.6.0"
+io-lifetimes = "0.7.1"
 
 [target.'cfg(not(any(windows, target_os = "hermit")))'.dependencies]
-rustix = "0.34.0"
+rustix = { version = "0.35.6", features = ["termios"] }
 
 [target.'cfg(target_os = "hermit")'.dependencies]
 hermit-abi = "0.2.0"
 
-[target.'cfg(windows)'.dependencies.winapi]
-version = "0.3"
-features = ["consoleapi", "processenv", "minwinbase", "minwindef", "winbase"]
+[target.'cfg(windows)'.dependencies.windows-sys]
+version = "0.36.0"
+features = [
+    "Win32_Foundation",
+    "Win32_System_Console",
+]
 
 [dev-dependencies]
 atty = "0.2.14"

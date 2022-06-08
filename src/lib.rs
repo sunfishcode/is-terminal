@@ -31,9 +31,7 @@ use io_lifetimes::AsFilelike;
 #[cfg(windows)]
 use io_lifetimes::BorrowedHandle;
 #[cfg(windows)]
-use winapi::shared::minwindef::DWORD;
-#[cfg(windows)]
-use winapi::shared::ntdef::WCHAR;
+use windows_sys::Win32::System::Console::STD_HANDLE;
 
 pub trait IsTerminal {
     /// Returns true if this is a terminal.
@@ -55,7 +53,7 @@ impl<Stream: AsFilelike> IsTerminal for Stream {
     fn is_terminal(&self) -> bool {
         #[cfg(any(unix, target_os = "wasi"))]
         {
-            rustix::io::isatty(self)
+            rustix::termios::isatty(self)
         }
 
         #[cfg(target_os = "hermit")]
@@ -82,18 +80,18 @@ impl<Stream: AsFilelike> IsTerminal for Stream {
 #[cfg(windows)]
 fn _is_terminal(stream: BorrowedHandle<'_>) -> bool {
     use std::os::windows::io::AsRawHandle;
-    use winapi::um::processenv::GetStdHandle;
-    use winapi::um::winbase::{
+    use windows_sys::Win32::System::Console::GetStdHandle;
+    use windows_sys::Win32::System::Console::{
         STD_ERROR_HANDLE as STD_ERROR, STD_INPUT_HANDLE as STD_INPUT,
         STD_OUTPUT_HANDLE as STD_OUTPUT,
     };
 
     let (fd, others) = unsafe {
-        if stream.as_raw_handle() == GetStdHandle(STD_INPUT) {
+        if stream.as_raw_handle() == GetStdHandle(STD_INPUT) as _ {
             (STD_INPUT, [STD_ERROR, STD_OUTPUT])
-        } else if stream.as_raw_handle() == GetStdHandle(STD_OUTPUT) {
+        } else if stream.as_raw_handle() == GetStdHandle(STD_OUTPUT) as _ {
             (STD_OUTPUT, [STD_INPUT, STD_ERROR])
-        } else if stream.as_raw_handle() == GetStdHandle(STD_ERROR) {
+        } else if stream.as_raw_handle() == GetStdHandle(STD_ERROR) as _ {
             (STD_ERROR, [STD_INPUT, STD_OUTPUT])
         } else {
             return false;
@@ -120,9 +118,9 @@ fn _is_terminal(stream: BorrowedHandle<'_>) -> bool {
 
 /// Returns true if any of the given fds are on a console.
 #[cfg(windows)]
-unsafe fn console_on_any(fds: &[DWORD]) -> bool {
-    use winapi::um::consoleapi::GetConsoleMode;
-    use winapi::um::processenv::GetStdHandle;
+unsafe fn console_on_any(fds: &[STD_HANDLE]) -> bool {
+    use windows_sys::Win32::System::Console::GetConsoleMode;
+    use windows_sys::Win32::System::Console::GetStdHandle;
 
     for &fd in fds {
         let mut out = 0;
@@ -136,24 +134,24 @@ unsafe fn console_on_any(fds: &[DWORD]) -> bool {
 
 /// Returns true if there is an MSYS tty on the given handle.
 #[cfg(windows)]
-unsafe fn msys_tty_on(fd: DWORD) -> bool {
-    use winapi::ctypes::c_void;
-    use winapi::shared::minwindef::MAX_PATH;
-    use winapi::um::minwinbase::FileNameInfo;
-    use winapi::um::processenv::GetStdHandle;
-    use winapi::um::winbase::GetFileInformationByHandleEx;
+unsafe fn msys_tty_on(fd: STD_HANDLE) -> bool {
+    use std::os::raw::c_void;
+    use windows_sys::Win32::Foundation::MAX_PATH;
+    use windows_sys::Win32::Storage::FileSystem::FileNameInfo;
+    use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
+    use windows_sys::Win32::System::Console::GetStdHandle;
 
-    /// Mirrors winapi::um::fileapi::FILE_NAME_INFO, giving it a fixed length
-    /// that we can stack allocate
+    /// Mirrors windows_sys::Win32::Storage::FileSystem::FILE_NAME_INFO, giving
+    /// it a fixed length that we can stack allocate
     #[repr(C)]
     #[allow(non_snake_case)]
     struct FILE_NAME_INFO {
-        FileNameLength: DWORD,
-        FileName: [WCHAR; MAX_PATH],
+        FileNameLength: u32,
+        FileName: [u16; MAX_PATH as usize],
     }
     let mut name_info = FILE_NAME_INFO {
         FileNameLength: 0,
-        FileName: [0; MAX_PATH],
+        FileName: [0; MAX_PATH as usize],
     };
     // Safety: function has no invariants. an invalid handle id will cause
     //         GetFileInformationByHandleEx to return an error
