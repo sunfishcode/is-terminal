@@ -11,8 +11,8 @@ repository = "https://github.com/sunfishcode/is-terminal"
 keywords = ["terminal", "tty", "isatty"]
 categories = ["command-line-interface"]
 license = "MIT"
-exclude = ["/.github"]
 edition = "2018"
+include = ["src", "build.rs", "Cargo.toml", "COPYRIGHT", "LICENSE*", "/*.md"]
 
 [dependencies]
 io-lifetimes = "0.7.1"
