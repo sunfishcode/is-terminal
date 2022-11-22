@@ -119,8 +119,7 @@ fn _is_terminal(stream: BorrowedHandle<'_>) -> bool {
 /// Returns true if any of the given fds are on a console.
 #[cfg(windows)]
 unsafe fn console_on_any(fds: &[STD_HANDLE]) -> bool {
-    use windows_sys::Win32::System::Console::GetConsoleMode;
-    use windows_sys::Win32::System::Console::GetStdHandle;
+    use windows_sys::Win32::System::Console::{GetConsoleMode, GetStdHandle};
 
     for &fd in fds {
         let mut out = 0;
@@ -135,11 +134,12 @@ unsafe fn console_on_any(fds: &[STD_HANDLE]) -> bool {
 /// Returns true if there is an MSYS tty on the given handle.
 #[cfg(windows)]
 unsafe fn msys_tty_on(fd: STD_HANDLE) -> bool {
-    use std::os::raw::c_void;
-    use windows_sys::Win32::Foundation::MAX_PATH;
-    use windows_sys::Win32::Storage::FileSystem::FileNameInfo;
-    use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
-    use windows_sys::Win32::System::Console::GetStdHandle;
+    use std::ffi::c_void;
+    use windows_sys::Win32::{
+        Foundation::MAX_PATH,
+        Storage::FileSystem::{FileNameInfo, GetFileInformationByHandleEx},
+        System::Console::GetStdHandle,
+    };
 
     /// Mirrors windows_sys::Win32::Storage::FileSystem::FILE_NAME_INFO, giving
     /// it a fixed length that we can stack allocate
