@@ -73,9 +73,9 @@ impl<Stream: AsFilelike> IsTerminal for Stream {
     }
 }
 
-// The Windows implementation here is copied from atty. The only significant
-// modification is to take a `BorrowedHandle` argument instead of using a
-// `Stream` enum.
+// The Windows implementation here is copied from atty, with #51 and #54
+// applied. The only significant modification is to take a `BorrowedHandle`
+// argument instead of using a `Stream` enum.
 
 #[cfg(windows)]
 fn _is_terminal(stream: BorrowedHandle<'_>) -> bool {

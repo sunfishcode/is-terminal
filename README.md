@@ -27,11 +27,14 @@ high-level stream types instead of raw file descriptors.
 On Windows, it uses a variety of techniques to determine whether the given
 stream is a terminal.
 
-This crate is derived from [the atty crate] with PR \#51 applied. The main
-externally visible differences are that the atty crate only accepts stdin,
-stdout, or stderr, while this crate accepts any stream. In particular, this
-crate does not access any stream that is not passed to it, in accordance with
-[I/O safety].
+This crate is derived from [the atty crate] with [PR \#51] bug fix and
+[PR \#54] port to windows-sys applied. The only additional difference is that
+the atty crate only accepts stdin, stdout, or stderr, while this crate accepts
+any stream. In particular, this crate does not access any stream that is not
+passed to it, in accordance with [I/O safety].
+
+[PR \#51]: https://github.com/softprops/atty/pull/51
+[PR \#54]: https://github.com/softprops/atty/pull/54
 
 ## Example
 
