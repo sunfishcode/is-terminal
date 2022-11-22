@@ -8,14 +8,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [ubuntu-latest, windows-latest, macos-11]
+        build: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - build: ubuntu-latest
             os: ubuntu-latest
           - build: windows-latest
             os: windows-latest
-          - build: macos-11
-            os: macos-11
+          - build: macos-latest
+            os: macos-latest
         rust:
           - stable
     steps:
@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [ubuntu-latest, ubuntu-18.04, windows-latest, macos-11]
+        build: [ubuntu-latest, ubuntu-18.04, windows-latest, macos-latest]
         include:
           - build: ubuntu-latest
             os: ubuntu-latest
@@ -42,8 +42,8 @@ jobs:
             os: ubuntu-18.04
           - build: windows-latest
             os: windows-latest
-          - build: macos-11
-            os: macos-11
+          - build: macos-latest
+            os: macos-latest
         rust:
           - nightly
           - stable
