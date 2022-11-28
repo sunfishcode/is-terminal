@@ -18,7 +18,7 @@ include = ["src", "build.rs", "Cargo.toml", "COPYRIGHT", "LICENSE*", "/*.md"]
 io-lifetimes = "1.0.0"
 
 [target.'cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))'.dependencies]
-rustix = { version = "0.36.0", features = ["termios"] }
+rustix = { version = "0.36.4", features = ["termios"] }
 
 [target.'cfg(target_os = "hermit")'.dependencies]
 hermit-abi = "0.2.0"
@@ -33,5 +33,5 @@ features = [
 [dev-dependencies]
 atty = "0.2.14"
 
-[target.'cfg(unix)'.dev-dependencies]
+[target.'cfg(any(unix, target_os = "wasi"))'.dev-dependencies]
 libc = "0.2.110"

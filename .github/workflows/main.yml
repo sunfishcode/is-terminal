@@ -69,7 +69,7 @@ jobs:
     - run: >
         rustup target add
         wasm32-wasi
-    - run: cargo check --workspace --release -vv --target=wasm32-wasi
+    - run: cargo check --workspace --release -vv --target=wasm32-wasi --all-targets
 
   test:
     name: Test
