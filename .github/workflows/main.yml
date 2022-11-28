@@ -1,83 +1,107 @@
-on: [push, pull_request]
-
 name: CI
 
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
 jobs:
+  rustfmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: ./.github/actions/install-rust
+      with:
+        toolchain: stable
+    - run: cargo fmt --all -- --check
+
   check:
     name: Check
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [ubuntu-latest, windows-latest, macos-latest]
+        build: [stable, nightly]
         include:
-          - build: ubuntu-latest
+          - build: stable
             os: ubuntu-latest
-          - build: windows-latest
-            os: windows-latest
-          - build: macos-latest
-            os: macos-latest
-        rust:
-          - stable
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
+            rust: stable
+          - build: nightly
+            os: ubuntu-latest
+            rust: nightly
 
-  test:
-    name: Test Suite
+    env:
+      # -D warnings is commented out in our install-rust action; re-add it here.
+      RUSTFLAGS: -D warnings
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: ./.github/actions/install-rust
+      with:
+        toolchain: ${{ matrix.rust }}
+
+    - run: rustup target add x86_64-apple-darwin wasm32-unknown-unknown
+    - run: cargo check --workspace --release -vv --target=x86_64-apple-darwin
+    - run: cargo check --workspace --release -vv --target=wasm32-unknown-unknown
+
+  check_nightly:
+    name: Check on Rust nightly
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [ubuntu-latest, ubuntu-18.04, windows-latest, macos-latest]
+        build: [nightly]
         include:
-          - build: ubuntu-latest
+          - build: nightly
             os: ubuntu-latest
-          - build: ubuntu-18.04
-            os: ubuntu-18.04
-          - build: windows-latest
-            os: windows-latest
-          - build: macos-latest
-            os: macos-latest
-        rust:
-          - nightly
-          - stable
-          - 1.48.0
-        exclude:
-          - build: macos-latest
-            rust: 1.48.0
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+            rust: nightly
 
-  fmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: ./.github/actions/install-rust
+      with:
+        toolchain: ${{ matrix.rust }}
+    - run: >
+        rustup target add
+        wasm32-wasi
+    - run: cargo check --workspace --release -vv --target=wasm32-wasi
+
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        rust:
-          - stable
+        build: [ubuntu-nightly, windows-nightly, ubuntu-stable, windows-stable, macos-nightly, macos-stable]
+        include:
+          - build: ubuntu-nightly
+            os: ubuntu-latest
+            rust: nightly
+          - build: windows-nightly
+            os: windows-latest
+            rust: nightly
+          - build: macos-nightly
+            os: macos-latest
+            rust: nightly
+          - build: ubuntu-stable
+            os: ubuntu-latest
+            rust: stable
+          - build: windows-stable
+            os: windows-latest
+            rust: stable
+          - build: macos-stable
+            os: macos-latest
+            rust: stable
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-      - run: rustup component add rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: ./.github/actions/install-rust
+      with:
+        toolchain: ${{ matrix.rust }}
+    - run: cargo test --workspace
