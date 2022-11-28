@@ -256,6 +256,7 @@ impl IsTerminal for std::process::ChildStderr {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(not(target_os = "unknown"))]
     use super::IsTerminal;
 
     #[test]
@@ -286,7 +287,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "wasi"))]
     fn stdin() {
         unsafe {
             assert_eq!(
@@ -297,7 +298,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "wasi"))]
     fn stdout() {
         unsafe {
             assert_eq!(
@@ -308,7 +309,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "wasi"))]
     fn stderr() {
         unsafe {
             assert_eq!(
@@ -319,7 +320,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "wasi"))]
     fn stdin_vs_libc() {
         unsafe {
             assert_eq!(
@@ -330,7 +331,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "wasi"))]
     fn stdout_vs_libc() {
         unsafe {
             assert_eq!(
@@ -341,7 +342,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "wasi"))]
     fn stderr_vs_libc() {
         unsafe {
             assert_eq!(
