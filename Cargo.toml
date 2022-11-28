@@ -17,7 +17,7 @@ include = ["src", "build.rs", "Cargo.toml", "COPYRIGHT", "LICENSE*", "/*.md"]
 [dependencies]
 io-lifetimes = "1.0.0"
 
-[target.'cfg(not(any(windows, target_os = "hermit")))'.dependencies]
+[target.'cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))'.dependencies]
 rustix = { version = "0.36.0", features = ["termios"] }
 
 [target.'cfg(target_os = "hermit")'.dependencies]

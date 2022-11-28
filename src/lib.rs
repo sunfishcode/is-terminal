@@ -27,6 +27,7 @@
 
 #![cfg_attr(unix, no_std)]
 
+#[cfg(not(target_os = "unknown"))]
 use io_lifetimes::AsFilelike;
 #[cfg(windows)]
 use io_lifetimes::BorrowedHandle;
@@ -48,6 +49,7 @@ pub trait IsTerminal {
     fn is_terminal(&self) -> bool;
 }
 
+#[cfg(not(target_os = "unknown"))]
 impl<Stream: AsFilelike> IsTerminal for Stream {
     #[inline]
     fn is_terminal(&self) -> bool {
@@ -64,11 +66,6 @@ impl<Stream: AsFilelike> IsTerminal for Stream {
         #[cfg(windows)]
         {
             _is_terminal(self.as_filelike())
-        }
-
-        #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
-        {
-            false
         }
     }
 }
@@ -175,6 +172,86 @@ unsafe fn msys_tty_on(fd: STD_HANDLE) -> bool {
     let is_msys = name.contains("msys-") || name.contains("cygwin-");
     let is_pty = name.contains("-pty");
     is_msys && is_pty
+}
+
+#[cfg(target_os = "unknown")]
+impl IsTerminal for std::io::Stdin {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl IsTerminal for std::io::Stdout {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl IsTerminal for std::io::Stderr {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl<'a> IsTerminal for std::io::StdinLock<'a> {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl<'a> IsTerminal for std::io::StdoutLock<'a> {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl<'a> IsTerminal for std::io::StderrLock<'a> {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl<'a> IsTerminal for std::fs::File {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl IsTerminal for std::process::ChildStdin {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl IsTerminal for std::process::ChildStdout {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
+}
+
+#[cfg(target_os = "unknown")]
+impl IsTerminal for std::process::ChildStderr {
+    #[inline]
+    fn is_terminal(&self) -> bool {
+        false
+    }
 }
 
 #[cfg(test)]
