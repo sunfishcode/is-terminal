@@ -13,6 +13,7 @@ categories = ["command-line-interface"]
 license = "MIT"
 edition = "2018"
 include = ["src", "build.rs", "Cargo.toml", "COPYRIGHT", "LICENSE*", "/*.md"]
+rust-version = "1.48"
 
 [dependencies]
 io-lifetimes = "1.0.0"
