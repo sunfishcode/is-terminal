@@ -36,3 +36,6 @@ atty = "0.2.14"
 
 [target.'cfg(any(unix, target_os = "wasi"))'.dev-dependencies]
 libc = "0.2.110"
+
+[target.'cfg(windows)'.dev-dependencies]
+tempfile  = "3"
