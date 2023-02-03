@@ -22,7 +22,7 @@ io-lifetimes = "1.0.0"
 rustix = { version = "0.36.4", features = ["termios"] }
 
 [target.'cfg(target_os = "hermit")'.dependencies]
-hermit-abi = "0.2.0"
+hermit-abi = "0.3.0"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
 version = "0.45.0"
