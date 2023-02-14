@@ -166,7 +166,10 @@ unsafe fn msys_tty_on(handle: HANDLE) -> bool {
     }
 
     // Use `get` because `FileNameLength` can be out of range.
-    let s = match name_info.FileName.get(..name_info.FileNameLength as usize / 2) {
+    let s = match name_info
+        .FileName
+        .get(..name_info.FileNameLength as usize / 2)
+    {
         None => return false,
         Some(s) => s,
     };
