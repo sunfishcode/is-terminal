@@ -165,13 +165,19 @@ unsafe fn msys_tty_on(handle: HANDLE) -> bool {
         return false;
     }
 
-    let s = &name_info.FileName[..name_info.FileNameLength as usize / 2];
+    // Use `get` because `FileNameLength` can be out of range.
+    let s = match name_info.FileName.get(..name_info.FileNameLength as usize / 2) {
+        None => return false,
+        Some(s) => s,
+    };
     let name = String::from_utf16_lossy(s);
+    // Get the file name only.
+    let name = name.rsplit('\\').next().unwrap_or(&name);
     // This checks whether 'pty' exists in the file name, which indicates that
     // a pseudo-terminal is attached. To mitigate against false positives
     // (e.g., an actual file name that contains 'pty'), we also require that
-    // either the strings 'msys-' or 'cygwin-' are in the file name as well.)
-    let is_msys = name.contains("msys-") || name.contains("cygwin-");
+    // the file name begins with either the strings 'msys-' or 'cygwin-'.)
+    let is_msys = name.starts_with("msys-") || name.starts_with("cygwin-");
     let is_pty = name.contains("-pty");
     is_msys && is_pty
 }
