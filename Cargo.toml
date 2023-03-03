@@ -19,7 +19,7 @@ rust-version = "1.48"
 io-lifetimes = "1.0.0"
 
 [target.'cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))'.dependencies]
-rustix = { version = "0.36.4", features = ["termios"] }
+rustix = { version = "0.37.0", features = ["termios"] }
 
 [target.'cfg(target_os = "hermit")'.dependencies]
 hermit-abi = "0.3.0"
