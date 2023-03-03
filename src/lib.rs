@@ -291,34 +291,28 @@ mod tests {
     #[test]
     #[cfg(any(unix, target_os = "wasi"))]
     fn stdin() {
-        unsafe {
-            assert_eq!(
-                atty::is(atty::Stream::Stdin),
-                rustix::io::stdin().is_terminal()
-            )
-        }
+        assert_eq!(
+            atty::is(atty::Stream::Stdin),
+            rustix::io::stdin().is_terminal()
+        )
     }
 
     #[test]
     #[cfg(any(unix, target_os = "wasi"))]
     fn stdout() {
-        unsafe {
-            assert_eq!(
-                atty::is(atty::Stream::Stdout),
-                rustix::io::stdout().is_terminal()
-            )
-        }
+        assert_eq!(
+            atty::is(atty::Stream::Stdout),
+            rustix::io::stdout().is_terminal()
+        )
     }
 
     #[test]
     #[cfg(any(unix, target_os = "wasi"))]
     fn stderr() {
-        unsafe {
-            assert_eq!(
-                atty::is(atty::Stream::Stderr),
-                rustix::io::stderr().is_terminal()
-            )
-        }
+        assert_eq!(
+            atty::is(atty::Stream::Stderr),
+            rustix::io::stderr().is_terminal()
+        )
     }
 
     #[test]
