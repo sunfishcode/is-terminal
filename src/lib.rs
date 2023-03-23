@@ -38,6 +38,7 @@ use std::os::windows::io::AsRawHandle;
 #[cfg(windows)]
 use windows_sys::Win32::Foundation::HANDLE;
 
+/// Extension trait to check whether something is a terminal.
 pub trait IsTerminal {
     /// Returns true if this is a terminal.
     ///
@@ -51,6 +52,19 @@ pub trait IsTerminal {
     /// }
     /// ```
     fn is_terminal(&self) -> bool;
+}
+
+/// Returns `true` if `this` is a terminal.
+///
+/// # Example
+///
+/// ```
+/// if is_terminal::is_terminal(&std::io::stdout()) {
+///     println!("stdout is a terminal")
+/// }
+/// ```
+pub fn is_terminal<T: IsTerminal>(this: &T) -> bool {
+    this.is_terminal()
 }
 
 #[cfg(not(target_os = "unknown"))]
