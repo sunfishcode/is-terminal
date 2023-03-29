@@ -57,7 +57,7 @@ pub trait IsTerminal {
 /// Returns `true` if `this` is a terminal.
 ///
 /// This is equivalent to calling `this.is_terminal()` and exists only as a
-/// convenience to calling the trait method [`IsTerminal::is_terminal()`]
+/// convenience to calling the trait method [`IsTerminal::is_terminal`]
 /// without importing the trait.
 ///
 /// # Example
