@@ -6,7 +6,7 @@ authors = [
     "Dan Gohman <dev@sunfishcode.online>"
 ]
 description = "Test whether a given stream is a terminal"
-documentation = "http://docs.rs/is-terminal"
+documentation = "https://docs.rs/is-terminal"
 repository = "https://github.com/sunfishcode/is-terminal"
 keywords = ["terminal", "tty", "isatty"]
 categories = ["command-line-interface"]
