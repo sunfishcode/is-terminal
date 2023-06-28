@@ -13,13 +13,10 @@ categories = ["command-line-interface"]
 license = "MIT"
 edition = "2018"
 include = ["src", "build.rs", "Cargo.toml", "COPYRIGHT", "LICENSE*", "/*.md"]
-rust-version = "1.48"
-
-[dependencies]
-io-lifetimes = "1.0.0"
+rust-version = "1.63"
 
 [target.'cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))'.dependencies]
-rustix = { version = "0.37.0", features = ["termios"] }
+rustix = { version = "0.38.0", features = ["termios"] }
 
 [target.'cfg(target_os = "hermit")'.dependencies]
 hermit-abi = "0.3.0"
@@ -37,6 +34,9 @@ atty = "0.2.14"
 
 [target.'cfg(any(unix, target_os = "wasi"))'.dev-dependencies]
 libc = "0.2.110"
+
+[target.'cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))'.dev-dependencies]
+rustix = { version = "0.38.0", features = ["stdio"] }
 
 [target.'cfg(windows)'.dev-dependencies]
 tempfile  = "3"
