@@ -12,6 +12,11 @@
   </p>
 </div>
 
+As of Rust 1.70, most users should use the [`IsTerminal`] trait in the Rust
+standard library instead of this crate.
+
+<hr>
+
 is-terminal is a simple utility that answers one question:
 
 > Is this a terminal?
@@ -102,3 +107,4 @@ version of this crate.
 [the atty crate]: https://crates.io/crates/atty
 [I/O safety]: https://github.com/rust-lang/rfcs/blob/master/text/3128-io-safety.md
 [Rust on Debian stable]: https://packages.debian.org/stable/rust/rustc
+[`IsTerminal`]: https://doc.rust-lang.org/stable/std/io/trait.IsTerminal.html
