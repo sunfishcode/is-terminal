@@ -25,10 +25,19 @@
 //!
 //! [`isatty`]: https://man7.org/linux/man-pages/man3/isatty.3.html
 
-#![cfg_attr(unix, no_std)]
+#![cfg_attr(
+    not(any(
+        unix,
+        windows,
+        target_os = "wasi",
+        target_os = "hermit",
+        target_os = "unknown"
+    )),
+    no_std
+)]
 
-#[cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))]
-use rustix::fd::AsFd;
+#[cfg(any(unix, target_os = "wasi"))]
+use std::os::fd::{AsFd, AsRawFd};
 #[cfg(target_os = "hermit")]
 use std::os::hermit::io::AsFd;
 #[cfg(windows)]
@@ -75,7 +84,7 @@ impl<Stream: AsFd> IsTerminal for Stream {
     fn is_terminal(&self) -> bool {
         #[cfg(any(unix, target_os = "wasi"))]
         {
-            rustix::termios::isatty(self)
+            unsafe { libc::isatty(self.as_fd().as_raw_fd()) == 1 }
         }
 
         #[cfg(target_os = "hermit")]
