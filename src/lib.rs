@@ -27,10 +27,10 @@
 
 #![cfg_attr(unix, no_std)]
 
-#[cfg(not(any(windows, target_os = "unknown")))]
+#[cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))]
 use rustix::fd::AsFd;
 #[cfg(target_os = "hermit")]
-use std::os::hermit::io::AsRawFd;
+use std::os::hermit::io::AsFd;
 #[cfg(windows)]
 use std::os::windows::io::{AsHandle, AsRawHandle, BorrowedHandle};
 #[cfg(windows)]
@@ -80,7 +80,8 @@ impl<Stream: AsFd> IsTerminal for Stream {
 
         #[cfg(target_os = "hermit")]
         {
-            hermit_abi::isatty(self.as_fd().as_raw_fd())
+            use std::os::hermit::io::AsRawFd;
+            hermit_abi::isatty(self.as_fd().as_fd().as_raw_fd())
         }
     }
 }
