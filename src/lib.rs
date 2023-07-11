@@ -25,10 +25,12 @@
 //!
 //! [`isatty`]: https://man7.org/linux/man-pages/man3/isatty.3.html
 
-#![cfg_attr(unix, no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))]
+#[cfg(all(any(unix, target_os = "wasi"), feature = "rustix"))]
 use rustix::fd::AsFd;
+#[cfg(all(any(unix, target_os = "wasi"), feature = "libc"))]
+use std::os::fd::{AsFd, AsRawFd};
 #[cfg(target_os = "hermit")]
 use std::os::hermit::io::AsFd;
 #[cfg(windows)]
@@ -73,9 +75,22 @@ pub fn is_terminal<T: IsTerminal>(this: T) -> bool {
 impl<Stream: AsFd> IsTerminal for Stream {
     #[inline]
     fn is_terminal(&self) -> bool {
-        #[cfg(any(unix, target_os = "wasi"))]
+        #[cfg(all(any(unix, target_os = "wasi"), feature = "rustix"))]
         {
             rustix::termios::isatty(self)
+        }
+
+        #[cfg(all(any(unix, target_os = "wasi"), feature = "libc"))]
+        unsafe {
+            libc::isatty(self.as_fd().as_raw_fd()) != 0
+        }
+
+        #[cfg(all(
+            any(unix, target_os = "wasi"),
+            not(any(feature = "rustix", feature = "libc"))
+        ))]
+        {
+            compile_error!("either \"rustix\" or \"libc\" must be enabled");
         }
 
         #[cfg(target_os = "hermit")]
