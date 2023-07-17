@@ -29,7 +29,11 @@
 
 #[cfg(all(any(unix, target_os = "wasi"), feature = "rustix"))]
 use rustix::fd::AsFd;
-#[cfg(all(any(unix, target_os = "wasi"), feature = "libc"))]
+#[cfg(all(
+    any(unix, target_os = "wasi"),
+    feature = "libc",
+    not(feature = "rustix")
+))]
 use std::os::fd::{AsFd, AsRawFd};
 #[cfg(target_os = "hermit")]
 use std::os::hermit::io::AsFd;
@@ -80,7 +84,11 @@ impl<Stream: AsFd> IsTerminal for Stream {
             rustix::termios::isatty(self)
         }
 
-        #[cfg(all(any(unix, target_os = "wasi"), feature = "libc"))]
+        #[cfg(all(
+            any(unix, target_os = "wasi"),
+            feature = "libc",
+            not(feature = "rustix")
+        ))]
         unsafe {
             libc::isatty(self.as_fd().as_raw_fd()) != 0
         }
