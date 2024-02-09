@@ -110,9 +110,7 @@ impl<Stream: AsHandle> IsTerminal for Stream {
 
 #[cfg(windows)]
 fn handle_is_console(handle: BorrowedHandle<'_>) -> bool {
-    use windows_sys::Win32::System::Console::{
-        GetConsoleMode, GetStdHandle, STD_ERROR_HANDLE, STD_INPUT_HANDLE, STD_OUTPUT_HANDLE,
-    };
+    use windows_sys::Win32::System::Console::GetConsoleMode;
 
     let handle = handle.as_raw_handle();
 
