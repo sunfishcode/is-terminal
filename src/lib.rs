@@ -106,13 +106,11 @@ impl<Stream: AsHandle> IsTerminal for Stream {
 
 // The Windows implementation here is copied from `handle_is_console` in
 // library/std/src/sys/pal/windows/io.rs in Rust at revision
-// 99128b7e45f8b95d962da2e6ea584767f0c85455.
+// e74c667a53c6368579867a74494e6fb7a7f17d13.
 
 #[cfg(windows)]
 fn handle_is_console(handle: BorrowedHandle<'_>) -> bool {
-    use windows_sys::Win32::System::Console::{
-        GetConsoleMode, GetStdHandle, STD_ERROR_HANDLE, STD_INPUT_HANDLE, STD_OUTPUT_HANDLE,
-    };
+    use windows_sys::Win32::System::Console::GetConsoleMode;
 
     let handle = handle.as_raw_handle();
 
@@ -126,20 +124,6 @@ fn handle_is_console(handle: BorrowedHandle<'_>) -> bool {
         if GetConsoleMode(handle as HANDLE, &mut out) != 0 {
             // False positives aren't possible. If we got a console then we definitely have a console.
             return true;
-        }
-
-        // At this point, we *could* have a false negative. We can determine that this is a true
-        // negative if we can detect the presence of a console on any of the standard I/O streams. If
-        // another stream has a console, then we know we're in a Windows console and can therefore
-        // trust the negative.
-        for std_handle in [STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE] {
-            let std_handle = GetStdHandle(std_handle);
-            if std_handle != 0
-                && std_handle != handle as HANDLE
-                && GetConsoleMode(std_handle, &mut out) != 0
-            {
-                return false;
-            }
         }
 
         // Otherwise, we fall back to an msys hack to see if we can detect the presence of a pty.
