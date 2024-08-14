@@ -19,7 +19,7 @@ rust-version = "1.63"
 libc = "0.2"
 
 [target.'cfg(target_os = "hermit")'.dependencies]
-hermit-abi = "0.3.0"
+hermit-abi = "0.4.0"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
 version = "0.52.0"
