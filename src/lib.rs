@@ -123,13 +123,13 @@ fn handle_is_console(handle: BorrowedHandle<'_>) -> bool {
 
     unsafe {
         let mut out = 0;
-        if GetConsoleMode(handle, &mut out) != 0 {
+        if GetConsoleMode(handle as HANDLE, &mut out) != 0 {
             // False positives aren't possible. If we got a console then we definitely have a console.
             return true;
         }
 
         // Otherwise, we fall back to an msys hack to see if we can detect the presence of a pty.
-        msys_tty_on(handle)
+        msys_tty_on(handle as HANDLE)
     }
 }
 
