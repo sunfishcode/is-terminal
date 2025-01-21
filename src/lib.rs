@@ -36,12 +36,12 @@
     no_std
 )]
 
+#[cfg(target_os = "wasi")]
+use std::os::fd::{AsFd, AsRawFd};
 #[cfg(target_os = "hermit")]
 use std::os::hermit::io::AsFd;
 #[cfg(unix)]
 use std::os::unix::io::{AsFd, AsRawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsFd, AsRawFd};
 #[cfg(windows)]
 use std::os::windows::io::{AsHandle, AsRawHandle, BorrowedHandle};
 #[cfg(windows)]
@@ -123,13 +123,13 @@ fn handle_is_console(handle: BorrowedHandle<'_>) -> bool {
 
     unsafe {
         let mut out = 0;
-        if GetConsoleMode(handle, &mut out) != 0 {
+        if GetConsoleMode(handle as HANDLE, &mut out) != 0 {
             // False positives aren't possible. If we got a console then we definitely have a console.
             return true;
         }
 
         // Otherwise, we fall back to an msys hack to see if we can detect the presence of a pty.
-        msys_tty_on(handle)
+        msys_tty_on(handle as HANDLE)
     }
 }
 
