@@ -33,7 +33,7 @@ features = [
 atty = "0.2.14"
 
 [target.'cfg(any(unix, target_os = "wasi"))'.dev-dependencies]
-rustix = { version = "0.38.0", features = ["termios"] }
+rustix = { version = "0.38.44", features = ["termios"] }
 libc = "0.2.110"
 
 [target.'cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))'.dev-dependencies]

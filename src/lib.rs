@@ -36,12 +36,12 @@
     no_std
 )]
 
+#[cfg(target_os = "wasi")]
+use std::os::fd::{AsFd, AsRawFd};
 #[cfg(target_os = "hermit")]
 use std::os::hermit::io::AsFd;
 #[cfg(unix)]
 use std::os::unix::io::{AsFd, AsRawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsFd, AsRawFd};
 #[cfg(windows)]
 use std::os::windows::io::{AsHandle, AsRawHandle, BorrowedHandle};
 #[cfg(windows)]
