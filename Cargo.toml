@@ -22,7 +22,7 @@ libc = "0.2"
 hermit-abi = "0.4.0"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
-version = ">=0.52, <=0.59"
+version = ">=0.52, <0.60"
 features = [
     "Win32_Foundation",
     "Win32_Storage_FileSystem",
